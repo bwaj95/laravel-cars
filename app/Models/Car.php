@@ -16,4 +16,10 @@ class Car extends Model
 
     protected $fillable = ["name", "founded", "description"];
 
+    public function carModels()
+    {
+        //One-to-Many -> from Car to CarModel.
+        return $this->hasMany(CarModel::class);
+    }
+
 }
