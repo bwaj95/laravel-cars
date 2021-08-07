@@ -8,7 +8,7 @@
             {{ $car->name }}
         </h1>
         <p>
-            {{ $car->headquarter->headquarters }}, {{ $car->headquarter->country }}.
+            {{ $car->headquarter->headquarters ?? "" }}, {{ $car->headquarter->country ?? ""}}.
         </p>
     </div>
 
@@ -88,6 +88,10 @@
             <hr class="mt-4 mb-8">
         </div>
             
+    </div>
+
+    <div>
+        <img src="{{ asset('images/'.$car->image_path) }}" alt="">
     </div>
 
 </div>  

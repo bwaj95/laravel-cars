@@ -10,9 +10,10 @@
 
 
         <div class="flex justify-center pt-20" >
-            <form action="/cars" method="POST">
+            <form action="/cars" method="POST" enctype="multipart/form-data" >
                 @csrf
                 <div class="block">
+                    <input type="file" name="image" >
                     <input type="text" name="name" placeholder="Brand Name..." 
                     class="block shadow-5xl mb-10 p-2 w-80 italic placeholder-gray-400"/>
                     <input type="text" name="founded" placeholder="Founded Year..." 
@@ -26,6 +27,18 @@
                 </div>
             </form>
         </div>
+
+        @if ($errors->any()) 
+        {{-- $errors is a global variable. --}}
+            <div>
+                @foreach ($errors->all() as $error)
+                    <li>
+                        {{ $error }}
+                    </li>
+                @endforeach
+            </div>
+            
+        @endif
 
     </div>
 @endsection

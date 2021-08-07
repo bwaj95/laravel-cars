@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateValidationRequest;
 use App\Models\Car;
 use Illuminate\Http\Request;
 
@@ -14,7 +15,7 @@ class CarsController extends Controller
      */
     public function index()
     {
-        $cars = Car::all();
+        $cars = Car::paginate(3);
 
         return view("cars.index", [
             "cars" => $cars,
@@ -39,6 +40,33 @@ class CarsController extends Controller
      */
     public function store(Request $request)
     {
+
+        // //Custom Validation using CreateValidationRequest.
+        // $request->validated();
+
+        $request->validate([
+            "name" => "required",
+            "founded" => "required|integer|min:0|max:2021",
+            "description" => "required",
+            "image" => "required|mimes:png,jpg, jpeg|max:5048",
+        ]);
+
+        $newImageName = time() . "-" . $request->name . "." .
+        $request->image->extension();
+
+        $request->image->move(public_path("images"), $newImageName);
+
+        //Call the create method and pass an array.
+        //To make this work, write the fillable in the Car.php model.
+        $cars = Car::create([
+            "name" => $request->input('name'),
+            "founded" => $request->input('founded'),
+            "description" => $request->input('description'),
+            "image_path" => $newImageName,
+        ]);
+
+        return redirect("/cars");
+
         //dd($request);
         //request has (_token from csrf, name, founded, description)
         //Also method, session, previous URl and a lot more.
@@ -49,15 +77,50 @@ class CarsController extends Controller
         // $car->description = $request->input("description");
         // $car->save();
 
-        //Call the create method and pass an array.
-        //To make this work, write the fillable in the Car.php model.
-        $cars = Car::create([
-            "name" => $request->input('name'),
-            "founded" => $request->input('founded'),
-            "description" => $request->input('description'),
-        ]);
+        // //Request all fields.
+        // $test = $request->all();
 
-        return redirect("/cars");
+        // //Request EXCEPT
+        // $test = $request->except(["_token"]);
+
+        // //Request ONLY
+        // $test = $request->only(["name", "founded"]);
+
+        // //Has method
+        // $test = $request->has("founded"); //return true of false.
+
+        // //Current path
+        // $test = $request->path();
+
+        // if($request->is("cars")){
+        //     dd("endpoint is cars!");
+        // }
+
+        // //Current Method
+        // if($request->method("post")){
+        //     dd("Method is POST.");
+        // }
+
+        // if($request->isMethod("post")){
+        //     dd("Method is POST.");
+        // }
+
+        // //Show URL
+        // dd($request->url());
+
+        // //Show IP Address.
+        // dd($request->ip());
+
+        // //VALIDATION
+        // $request->validate([
+        //     "name" => "required|unique:cars",
+        //     "founded" => "required|integer|min:0|max:2021",
+        //     "description" => "required",
+        // ]);
+
+        //If valid, proceed.
+        //Else, throw a ValidationException and redirect to previous page,
+        //with all the validation errors.
 
     }
 
@@ -96,8 +159,11 @@ class CarsController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CreateValidationRequest $request, $id)
     {
+        //Custom Validation using CreateValidationRequest.
+        $request->validated();
+
         $car = Car::where("id", $id)
             ->update([
                 "name" => $request->input("name"),
