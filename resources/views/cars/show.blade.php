@@ -7,6 +7,9 @@
         <h1 class="test-5xl uppercase bold" >
             {{ $car->name }}
         </h1>
+        <p>
+            {{ $car->headquarter->headquarters }}, {{ $car->headquarter->country }}.
+        </p>
     </div>
 
     
@@ -34,7 +37,53 @@
                     <p>No cars found.</p>
                 @endforelse
             </ul>
+
+
+            <table>
+                <tr>
+                    <th>
+                        Model
+                    </th>
+                    <th>
+                        Engines
+                    </th>
+                    <th>
+                        Production Date.
+                    </th>
+                </tr>
+                @forelse ($car->carModels as $model)
+                <tr>
+                    <td>
+                        {{ $model->model_name }}
+                    </td>
+                    <td>
+                        @foreach ($car->engines as $engine)
+                            @if ($model->id === $engine->model_id)
+                            {{ $engine->engine_name }}
+                            @endif
+                        @endforeach
+                    </td>
+                    <td>
+                        {{ date(
+                            "d-m-Y", 
+                            strtotime($car->carProductionDate->created_at)
+                        ) }}
+                    </td>
+                </tr>
+                    
+                @empty
+                    <p>No car models found.</p>
+                @endforelse
+            </table>
             
+            <p>
+                Product Types:
+                @forelse ($car->products as $product)
+                    {{ $product->name }}
+                @empty
+                    No categories found.
+                @endforelse
+            </p>
             
             <hr class="mt-4 mb-8">
         </div>
